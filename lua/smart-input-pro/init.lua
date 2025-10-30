@@ -1,7 +1,7 @@
-local vscode = require("vscode")
 local M = {}
 
 function M.setup()
+	local vscode = require("vscode")
 	vim.api.nvim_create_autocmd("InsertEnter", {
 		callback = function()
 			vscode.call("smartInputPro.receiveVimModeChange", { args = { "Insert" } })
