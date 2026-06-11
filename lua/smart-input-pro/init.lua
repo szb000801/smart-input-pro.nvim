@@ -12,22 +12,42 @@ function M.setup()
 		return
 	end
 
+	-- 可以通过 :lua vim.g.smart_input_pro_debug = true/false 动态改变
+	local function is_debug()
+		return vim.g.smart_input_pro_debug == true
+	end
+
 	vim.api.nvim_create_autocmd("InsertEnter", {
 		callback = function()
-			vscode.call("smartInputPro.receiveVimModeChange", { args = { "Insert" } })
+			if is_debug() then
+				vim.notify("smart-input-pro: InsertEnter triggered", vim.log.levels.DEBUG)
+			end
+			local call_ok, call_result = pcall(function()
+				return vscode.call("smartInputPro.receiveVimModeChange", { args = { "Insert" } })
+			end)
+			if not call_ok then
+				vim.notify("smart-input-pro: InsertEnter failed: " .. tostring(call_result), vim.log.levels.ERROR)
+			end
 		end,
 	})
 
 	vim.api.nvim_create_autocmd("InsertLeave", {
 		callback = function()
-			vscode.call("smartInputPro.receiveVimModeChange", { args = { "Normal" } })
+			if is_debug() then
+				vim.notify("smart-input-pro: InsertLeave triggered", vim.log.levels.DEBUG)
+			end
+			local call_ok, call_result = pcall(function()
+				return vscode.call("smartInputPro.receiveVimModeChange", { args = { "Normal" } })
+			end)
+			if not call_ok then
+				vim.notify("smart-input-pro: InsertLeave failed: " .. tostring(call_result), vim.log.levels.ERROR)
+			end
 		end,
 	})
 
 	vim.notify("smart-input-pro: Loaded successfully", vim.log.levels.INFO)
 end
 
--- 自动初始化
 if vim.g.vscode then
 	M.setup()
 end
